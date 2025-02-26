@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales - Inventory Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-image: url('3.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        header {
+            background-color: #222;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        header nav ul li {
+            display: inline;
+        }
+
+        header nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        header nav a:hover {
+            color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="home.html"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="product.html">Products</a></li>
+                <li><a href="sales.html">Sales</a></li>
+                <li><a href="report.html">Reports</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="text-center">Sales Management</h1>
+
+        <!-- Search and Filter -->
+        <div class="mb-3">
+            <input type="text" id="search" class="form-control" placeholder="Search Sales...">
+        </div>
+
+        <!-- Error Message for No Search Results -->
+        <div id="error-message" class="alert alert-danger d-none" role="alert">
+            No sales found!
+        </div>
+
+        <!-- Sales Table -->
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity Sold</th>
+                    <th>Total Price</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="sales-table">
+                <!-- Sales entries will be added dynamically -->
+            </tbody>
+        </table>
+
+        <!-- Add Sales Form -->
+        <h2 class="mt-4">Add Sale</h2>
+        <form id="sales-form" class="row g-3">
+            <div class="col-md-6">
+                <input type="text" id="product-name" class="form-control" placeholder="Product Name" required>
+            </div>
+            <div class="col-md-3">
+                <input type="number" id="quantity" class="form-control" placeholder="Quantity" required>
+            </div>
+            <div class="col-md-3">
+                <input type="number" id="total-price" class="form-control" placeholder="Total Price" required>
+            </div>
+            <div class="col-md-6">
+                <input type="date" id="sale-date" class="form-control" required>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">Add Sale</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let sales = [];
+
+        // Function to render sales table
+        function renderSalesTable() {
+            const table = document.getElementById("sales-table");
+            table.innerHTML = "";
+            sales.forEach((sale, index) => {
+                let row = `<tr>
+                    <td>${sale.productName}</td>
+                    <td>${sale.quantity}</td>
+                    <td>$${sale.totalPrice}</td>
+                    <td>${sale.date}</td>
+                    <td>
+                        <button class='btn btn-danger btn-sm' onclick='deleteSale(${index})'>Delete</button>
+                    </td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        // Handle form submission
+        document.getElementById("sales-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const productName = document.getElementById("product-name").value;
+            const quantity = document.getElementById("quantity").value;
+            const totalPrice = document.getElementById("total-price").value;
+            const date = document.getElementById("sale-date").value;
+
+            sales.push({ productName, quantity, totalPrice, date });
+            renderSalesTable();
+            document.getElementById("sales-form").reset();
+        });
+
+        // Delete sale
+        function deleteSale(index) {
+            sales.splice(index, 1);
+            renderSalesTable();
+        }
+
+        // Search functionality with error message
+        document.getElementById("search").addEventListener("input", function() {
+            const searchTerm = this.value.toLowerCase();
+            const table = document.getElementById("sales-table");
+            table.innerHTML = "";
+            let found = false;
+
+            sales.forEach((sale, index) => {
+                if (sale.productName.toLowerCase().includes(searchTerm)) {
+                    let row = `<tr>
+                        <td>${sale.productName}</td>
+                        <td>${sale.quantity}</td>
+                        <td>$${sale.totalPrice}</td>
+                        <td>${sale.date}</td>
+                        <td>
+                            <button class='btn btn-danger btn-sm' onclick='deleteSale(${index})'>Delete</button>
+                        </td>
+                    </tr>`;
+                    table.innerHTML += row;
+                    found = true;
+                }
+            });
+
+            // Show or hide error message
+            const errorMessage = document.getElementById("error-message");
+            if (!found) {
+                errorMessage.classList.remove("d-none");
+            } else {
+                errorMessage.classList.add("d-none");
+            }
+        });
+    </script>
+
+</body>
+</html>
